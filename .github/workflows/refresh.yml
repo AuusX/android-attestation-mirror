@@ -1,0 +1,37 @@
+name: 刷新公开的Android硬件证明资料
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '7,27,47 * * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-attestation-snapshot
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: 检查PHP扩展
+        run: php -r 'exit(extension_loaded("curl") && extension_loaded("sodium") && extension_loaded("openssl") ? 0 : 1);'
+      - name: 下载官方资料并签名
+        env:
+          ATTESTATION_MIRROR_SIGNING_KEY: ${{ secrets.ATTESTATION_MIRROR_SIGNING_KEY }}
+        run: php publish.php
+      - name: 发布公开快照
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -- snapshot.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m '更新公开的Android硬件证明快照'
+          git push origin HEAD:main
