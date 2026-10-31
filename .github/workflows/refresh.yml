@@ -3,7 +3,7 @@ name: 刷新公开的Android硬件证明资料
 on:
   workflow_dispatch:
   schedule:
-    - cron: '7,17,27,37,47,57 * * * *'
+    - cron: '8,18,28,38,48,58 * * * *'
 
 permissions:
   contents: read
