@@ -22,7 +22,8 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
       - name: 检查PHP扩展
-        run: php -r 'exit(extension_loaded("curl") && extension_loaded("sodium") && extension_loaded("openssl") ? 0 : 1);'
+        run: |
+          php -r 'exit(extension_loaded("curl") && extension_loaded("sodium") && extension_loaded("openssl") ? 0 : 1);'
       - name: 下载官方资料并签名
         env:
           ATTESTATION_MIRROR_SIGNING_KEY: ${{ secrets.ATTESTATION_MIRROR_SIGNING_KEY }}
